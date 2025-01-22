@@ -261,11 +261,12 @@ Once you have checked these items, you can proceed to submit your assignment.
 1. Click on the **Terminal** tab in the pane below.
 2. Copy-paste the following line of code into the terminal and press enter.
 
-cd; cd ph142-sp25/lab/lab01; python3 turn_in.py
+cd; cd ph142-sp25/lab/lab01; python3.11 turn_in.py
 
 3. Follow the prompts to enter your Gradescope username and password.
 **Note: the terminal will not show your password being typed out. This is intentional as a security mechanism. Type your password as indicated and hit return/enter to submit.**
-4. If the submission is successful, you should see "Submission successful!" appear as the output. **Check your submission on the Gradescope website to ensure that the autograder worked properly and you received credit for your correct answers. If you think the autograder is incorrectly grading your work, please post on piazza!**
+4. If the submission is successful, you should see "Submission successful!" appear as the output. **Check your submission on the Gradescope website to ensure that the autograder worked properly and you received credit for your correct answers. If you think the autograder is incorrectly grading your work, please post on ed!**
+Please note that there is some maintenance being done to the autograder in the first week. 
 5. If the submission fails, try to diagnose the issue using the error messages--if you have problems, post on Piazza under the post "Datahub Issues".
 
 The late policy will be strictly enforced, **no matter the reason**, including submission issues, so be sure to submit early enough to have time to diagnose issues if problems arise.
