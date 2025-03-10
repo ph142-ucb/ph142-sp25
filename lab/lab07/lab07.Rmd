@@ -170,7 +170,7 @@ Based on this plot:
 
 - What proportion of the confidence intervals contain the mean? 
 
-*Answer will vary slightly* _97/100 = 0.97 of the confidence intervals contain the mean_
+_Type your answer here, replacing this text._
 
 Repeat this for a sample size of $n=50$. In the code chunk below, generalize your code from the previous chunk to create three samples, this time of size n = 50:
 
