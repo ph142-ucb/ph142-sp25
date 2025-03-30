@@ -1,0 +1,242 @@
+---
+title: "3+ Sample testing with continuous outcomes"
+
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+library(forcats)
+```
+
+## ANOVA
+
+
+### Visualizing first
+
+What graphical strategies have we learned to look at variability within and between groups?
+
+### A) Is there a difference between these means?
+
+Describe why you do or do not think so.
+
+```{r, out.width="80%", echo=FALSE, warning=F, message=F}
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+set.seed(1)
+
+group_1 <- rnorm(n = 10, mean = 15, sd = 3)
+group_2 <- rnorm(n = 10, mean = 15, sd = 3)
+group_3 <- rnorm(n = 10, mean = 15, sd = 3)
+
+no_diff <- data.frame(group_1, group_2, group_3)
+
+no_diff_narrow <- no_diff %>% gather(key = "Group", value = "Measure", group_1:group_3)
+
+means <- no_diff_narrow %>% group_by(Group) %>% summarise(Measure = mean(Measure))
+
+ggplot(no_diff_narrow, aes(x = Group, y = Measure)) + geom_point(aes(pch = "data")) + 
+  geom_point(data = means, col = "red", size = 2, aes(pch = "mean estimate")) + theme_minimal(base_size = 15) + 
+  scale_shape_manual(values = c(4, 20)) +
+  geom_text(data = means, col = "red", aes(label = paste("mean estimate =\n", round(Measure, 2))), nudge_x = 0.25) +
+  scale_y_continuous(limits = c(8, 40))
+```
+
+
+### Summary of the plots
+
+Plot (A)
+
+- The means (red dots) were not very different across the groups. This means
+the variation **between** the group means was small.
+- The distribution of the data (black Xs) was wide enough that the distribution 
+of points for each group overlapped almost completely. This means that the variation
+**within** each group was relatively wide 
+
+### B) Is there a difference between these means?
+
+Describe why you do or do not think so.
+
+
+```{r, out.width="80%", echo=FALSE, warning=F, message=F}
+group_1 <- rnorm(n = 10, mean = 15, sd = 3)
+group_2 <- rnorm(n = 10, mean = 20, sd = 3)
+group_3 <- rnorm(n = 10, mean = 27, sd = 3)
+
+diff <- data.frame(group_1, group_2, group_3)
+
+diff_narrow <- diff %>% gather(key = "Group", value = "Measure", group_1:group_3)
+
+means_2 <- diff_narrow %>% group_by(Group) %>% summarise(Measure = mean(Measure))
+
+ggplot(diff_narrow, aes(x = Group, y = Measure)) + geom_point(aes(pch = "data")) + 
+  geom_point(data = means_2, col = "red", size = 2, aes(pch = "mean estimate")) + theme_minimal(base_size = 15) + 
+  scale_shape_manual(values = c(4, 20)) +
+  geom_text(data = means_2, col = "red", aes(label = paste("mean estimate =\n", round(Measure, 2))), nudge_x = 0.25) +
+  scale_y_continuous(limits = c(8, 40))
+```
+
+
+### Summary of the plots
+
+Plot (B)
+
+- The means are quite different across the groups. The variation **between** the
+group means would be larger than in plot (A)
+- The distribution of the data overlaps between groups 1 and 2 and 2 and 3, but 
+not 1 and 3. The variation **within** each group is as wide as it was in Plot (A)
+but doesn't mask the mean differences, especially between group 1 and 3
+
+
+### C) Is there a difference between these means?
+
+Describe why you do or do not think so.
+
+```{r, out.width="80%", echo=FALSE, warning=F, message=F}
+group_1 <- rnorm(n = 10, mean = 15, sd = 3)
+group_2 <- rnorm(n = 10, mean = 20, sd = 3)
+group_3 <- rnorm(n = 10, mean = 15, sd = 3)
+
+diff_2 <- data.frame(group_1, group_2, group_3)
+
+diff_2_narrow <- diff_2 %>% gather(key = "Group", value = "Measure", group_1:group_3)
+
+means_3 <- diff_2_narrow %>% group_by(Group) %>% summarise(Measure = mean(Measure))
+
+ggplot(diff_2_narrow, aes(x = Group, y = Measure)) + geom_point(aes(pch = "data")) + 
+  geom_point(data = means_3, col = "red", size = 2, aes(pch = "mean estimate")) + theme_minimal(base_size = 15) + 
+  scale_shape_manual(values = c(4, 20)) +
+  geom_text(data = means_3, col = "red", aes(label = paste("mean estimate =\n", round(Measure, 2))), nudge_x = 0.25) +
+  scale_y_continuous(limits = c(8, 40))
+```
+
+
+### Summary of the plots
+
+Plot (C)
+
+- Here, the means for group 1 and 3 look similar, but the mean for group 2 appears
+a bit higher than the other two, though there is still overlap between the data 
+from all the groups
+- Is there evidence that at least one of the means is different?
+
+### D) Is there a difference between these means?
+
+Describe why you do or do not think so.
+
+```{r, out.width="80%", echo=FALSE, warning=F, message=F}
+group_1 <- rnorm(n = 10, mean = 15, sd = 7)
+group_2 <- rnorm(n = 10, mean = 20, sd = 7)
+group_3 <- rnorm(n = 10, mean = 27, sd = 7)
+
+diff_3 <- data.frame(group_1, group_2, group_3)
+
+diff_3_narrow <- diff_3 %>% gather(key = "Group", value = "Measure", group_1:group_3)
+
+means_4 <- diff_3_narrow %>% group_by(Group) %>% summarise(Measure = mean(Measure))
+
+ggplot(diff_3_narrow, aes(x = Group, y = Measure)) + geom_point(aes(pch = "data")) + 
+  geom_point(data = means_4, col = "red", size = 2, aes(pch = "mean estimate")) + theme_minimal(base_size = 15) + 
+  scale_shape_manual(values = c(4, 20)) +
+  geom_text(data = means_4, col = "red", aes(label = paste("mean estimate =\n", round(Measure, 2))), nudge_x = 0.25) +
+  scale_y_continuous(limits = c(8, 40))
+```
+
+
+### Summary of the plots
+
+Plot (D)
+
+- Plot (D) looked like Plot (B) but with more variation **within** groups
+- This variation makes the difference between the means harder to detect
+
+### Overall summary
+
+- What we informally did on the previous slides was compare the variation **between** 
+group means to the variation **within** the groups
+- This focus on variation is why this test is called ANOVA: an ANalysis Of VAriance
+- When the ratio of between vs. within variation is large enough then we detect 
+a difference between the groups
+- When the ratio isn't large enough we don't detect the difference.
+- This ratio is our test statistic, denoted by $F$
+
+## Descriptive plots
+
+
+### Box plot
+
+```{r, out.width="70%", fig.align='center', echo=FALSE}
+ggplot(diff_3_narrow, aes(x = Group, y = Measure)) + 
+  geom_boxplot() +
+    geom_point() +
+  theme_minimal(base_size = 15)
+```
+
+
+### Density plot
+
+```{r, out.width="60%", fig.align='center', echo=FALSE}
+ggplot(diff_3_narrow, aes(x = Measure)) + 
+  geom_density(aes(fill = Group), alpha = 0.5) +
+  theme_minimal(base_size = 15)
+```
+
+
+### Histograms with facet wrap
+```{r, out.width="60%", fig.align='center', echo=FALSE}
+ggplot(diff_3_narrow, aes(x = Measure)) + 
+  geom_histogram(aes(fill = Group), col = "white", binwidth = 2.5) +
+  theme_minimal(base_size = 15) + facet_wrap(~ Group, nrow = 3)
+```
+
+## Testing with ANOVA
+
+### The hypotheses
+
+**Null hypothesis**
+
+$H_0: \mu_1=\mu_2=...\mu_K$, where $K$ is the number of levels of the grouping variable
+
+- Can you also state the null hypothesis in words?
+
+
+### The hypotheses
+**Alternative hypothesis**
+
+$H_a:$ not all $\mu_1$, $\mu_2$,..., $\mu_K$ are equal
+
+- In words: Not all means are the same. Or, **at least one of the means** differs from the 
+others.
+
+
+### ANOVA in R: use `aov()`, then `tidy()` it up!
+
+- `aov()` stands for analysis of variance
+
+The general syntax for the ANOVA is:
+
+aov(outcomevariable ~ groupvaraible, data=dataset)
+
+We will save the output of this as an object and then use tidy(object) to get the output we want.
+
+reference: https://broom.tidyverse.org/reference/anova_tidiers.html
+
+### ANOVA in R: use `aov()`, then `tidy()` it up!
+We will focus on two parts of the output from this package:
+
+- `statistic` is the $F$ test statistic, the ratio of the variation between means
+vs. the variation within groups.
+
+- `p.value` is the p-value for the test. 
+
+### p of an f statistic in R
+
+You can check that you can calculate the p-value from the F distribution. Remember,
+that you need to specify a degrees of freedom for the numerator and for the denominator:
+
+pf(value, df1=numerator degrees of freedom, df2= denominator degrees of freedom, lower.tail=F)
+
+This general pattern of syntax should look familiar by now....
+
