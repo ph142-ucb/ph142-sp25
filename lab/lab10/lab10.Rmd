@@ -280,7 +280,7 @@ ggplot(data = sex_CIs, aes(x = method, y = estimate)) +
   geom_segment(aes(x = method, xend = method, y = lower_CI, yend = upper_CI)) +
   labs(y = "Estimate with 95% CI")
 
-# Assign p14 to a plotof the CIs. First, store them as a tibble
+# Assign p14 to a plot of the CIs as done above
 p14 <- NULL # YOUR CODE HERE
 p14
 
