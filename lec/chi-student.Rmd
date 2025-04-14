@@ -1,0 +1,262 @@
+---
+title: "Extending the Chi-square to two way tables"
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+```
+
+### Example :  gastroenteritis outbreak
+From Gross et al. Public health reports vol 104, March-April 1989, 164-169
+
+|Group        | Sandwich     | No Sandwich   | Row total |
+|-------------|--------------|---------------|-----------|
+|Ill          | 109          |  4            | 113       |
+|Not Ill      | 116          | 34            | 150       |
+|Column total | 225          | 38            | 263       |
+
+- The inner four cells are the observed cell counts
+- The outer row and column are the table **margins**
+- The margins are important for the computations, so be sure to calculate the
+marginal counts if they aren't computed for you.
+
+### Example :  gastroenteritis outbreak
+
+|Group        | Sandwich     | No Sandwich   | Row total |
+|-------------|--------------|---------------|-----------|
+|Ill          | 109          |  4            | 113       |
+|Not Ill      | 116          | 34            | 150       |
+|Column total | 225          | 38            | 263       |
+
+- What would these data look like under the null hypothesis of no association
+between sandwiches and getting sick?
+- That is, what are the expected counts under the null hypothesis?
+
+### Example :  gastroenteritis outbreak
+To help us get the expected counts, calculate the marginal percentages 
+and remove the data from the inner cells
+
+|Group        | Sandwich     | No Sandwich   | Row total |
+|-------------|--------------|---------------|-----------|
+|Ill          | ?            |  ?            | 113  (43%)|
+|Not Ill      | ?            |  ?            | 150  (57%)|
+|Column total | 225 (85.6%)  | 38 (14.4%)    | 263       |
+
+
+- Recall that if $A$ and $B$ are independent then $P(A \& B)=P(A)P(B)$. That is,
+if sandwiches and illness are independent, then $P(Sandwich \& Illness) = P(S)P(I)=.855*.43 =.368 =36.8\%$
+
+- What is the expected count for the S&I cell under the null hypothesis?
+    - 0.368*263 = 96.7
+    
+### Example :  gastroenteritis outbreak
+
+- What is the expected count for the S&I cell under the null hypothesis?
+     - 0.368*263 = 96.7
+
+|Group        | Sandwich     | No Sandwich   | Row total |
+|-------------|--------------|---------------|-----------|
+|Ill          |96.7          |  16.3         | 113  (43%)|
+|Not Ill      | 128.3        |  21.7         | 150  (57%)|
+|Column total | 225 (85.6%)  | 38 (14.4%)    | 263       |
+
+- What are the expected counts for the other cells under $H_0$?
+    - S' & I: $0.144 \times 0.43\times 263$
+    - S & I': $0.856 \times 0.57\times 263$
+    - S' & I': $0.144 \times 0.57 \times 263$
+    
+- Note that once you compute two of the cells you can use subtraction from the 
+marginal counts to get the other two values. Thus, only do as much calculation
+as you need and then get the rest by subtracting from the margins.
+
+### A trick for calculating the expected counts
+
+- On the previous slides, we first calculated the marginal probabilities and
+multiplied them together and with the sample size to calculate the expected counts.
+- We started with this calculation so you could see the intuition for why it worked.
+- But there is a quicker way!:
+
+$$E_i =\frac{\text{row total}\times\text{col total}}{\text{overall total}}$$
+
+### A trick for calculating the expected counts
+Worked calculations:
+
+- S&I = 225*113/263 = 96.7
+- S&I' = 225*150/263 = 128.3
+- S'&I = 38*113/263 = 16.3
+- S'&I' = 38*150/263 = 21.7
+- **Use this trick for faster calculation**
+
+### Compare $E_i$ and $O_i$
+
+|Group         | Sandwich         | No Sandwich        | 
+|-------------|-------------------|--------------------|
+|Ill          | E=96.7 vs. O=109  | E=16.3 vs. O=4     | 
+|Not Ill      | E=128.3 vs. O=116 | E=21.7 vs. O=34    |
+
+- Think about the direction of the deviations. When is the observed higher than
+the expected? When is it the other way around? Does this jibe with the association
+you're expecting?
+
+### Calculate the chi-square test statistic
+
+$\chi^2 = \sum_{i=1}^k\frac{(E_i-O_i)^2}{E_i}$
+
+$\chi^2 = \frac{(96.7-109)^2}{96.7} + \frac{(16.3-4)^2}{16.3} + \frac{(128.3-116)^2}{128.3} + \frac{(21.7-34)^2}{21.7}$
+
+$\chi^2 = 1.5645+9.2816+1.1792+6.972=18.9973$
+
+### Calculate the degrees of freedom
+
+- Like last class, we need a degrees of freedom for the test statistic.
+- When we only had one variable the degrees of freedom equaled $k-1$
+- Here we have two variables. The degrees of freedom equals $(r-1)(c-1)$, where
+$r$ is the number of inner row cells and $c$ is the number of inner 
+column cells (here $r=2$ and $c=2$)
+- For these data, df = (2-1)(2-1) = 1
+
+### Calculate the p-value for the chi-square test
+
+```{r calc-p-value}
+pchisq(q = 18.9972, df = 1, lower.tail = F) #df = (2-1)(2-1) = 1
+```
+
+- **Remember for the chi-squared test we always do an upper tail test!**
+
+Interpret the p-value: Assuming no association between sandwiches and illness,
+there is less than a 0.01% chance of the chi-square value we calculated or a larger one.
+This probability is small enough that there is evidence in favor of the 
+alternative hypothesis that there is a relationship between sandwiches and illness.
+
+## Chi-squared test of independence in R
+
+### Chi-square test of independence in R
+
+To compute the chi-square test in R, we need to first put this two-way table into a
+data frame:
+```{r}
+library(tibble)
+two_way <- tribble(~ sandwich, ~ nosandwich,
+                     109,        4, #row for Illness
+                     116,         34) #row for no Illness
+```
+
+### Chi-square test of independence in R
+
+Then, we use `chisq.test()`. We set `correct=F` to get a value closer to what we
+calculated by hand - there will be some differences here  because of rounding:
+
+```{r}
+chisq.test(two_way, correct = F) #not using Yates' correction for continuity
+```
+
+## Yates' continuity correction
+
+### Continuity correction 
+- The $\chi^2$ is a continuous distribution and we are using discrete observations to estimate a $\chi^2$ value.
+- When there are many degrees of freedom and/or a large number of observations, this is a reasonable approximation
+- In a 2x2 table (df=1) with a small sample size this may be less reasonable.
+- The correction looks like this $$\chi^2=\sum_{i=1}^k\frac{(|E_i-O_i|-0.5)^2}{E_i}$$
+What do you thing this will do to the $\chi^2$ value?
+
+### Chi-square test of independence in R
+
+Compare to the result where `correct = T` (the default with correction):
+
+```{r}
+chisq.test(two_way, correct = T) #using Yates' correction for continuity
+```
+
+- A common practice is to incorporate the Yate's continuity correction when
+n < 100 or any O_i < 10. [Reference](https://www.bmj.com/about-bmj/resources-readers/publications/statistics-square-one/8-chi-squared-tests)
+
+
+### Relationship between the chi-square test and the two-sample z test
+
+- The topic of upcoming lab. 
+
+## Extending the 2 X 2 to a more generic R X C
+
+### Extending the 2 X 2 to a more generic R X C
+- we have looked at 2 x 2 as an example of how you would compare two categorical variables
+- 2 X 2 tables are common as many variables that we look at are classified as binary 
+- however the chi-squared test works the same way for variables with more than 2 categories
+
+### Another example: HPV Status and age group
+
+Suppose you had these data of HPV status vs. age group. 
+
+|Age Group    | HPV +        | HPV -          | Row total   |
+|:-----------:|:------------:|:--------------:|:-----------:|
+|14-19        | 160          | 492            | 652 (33.9%) |
+|20-24        | 85           | 104            | 189 (9.8%)  |
+|25-29        | 48           | 126            | 174 (9.1%)  |
+|30-39        | 90           | 238            | 328 (17.1%) |
+|40-49        | 82           | 242            | 324 (16.9%) |
+|50-59        | 50           | 204            | 254 (13.2%) |
+| Col total   | 515 (26.8%)  | 1406 (73.2%)   | 1921        |
+
+- Which variable is explanatory and which is response?
+- Can you formulate a null and alternative hypothesis using these data?
+
+### Welcome back to the dodged histogram
+
+- Recall that we used dodged histograms to compare the conditional distribution 
+of one variable across the levels of another variable.
+- These plots are useful to make before we conduct the hypothesis test.
+
+Remember the syntax:
+ geom_bar(aes(fill = **outcome**), stat = "identity", position = "dodge")
+ 
+The "identity" option tells R that the values are already calculated
+
+
+### Welcome back to the dodged histogram
+Is there visual evidence of a difference between the conditional distribution of HPV status by age group?
+```{r chpv, echo=F, out.width="75%", fig.align=T, message=F}
+age.group <- rep(c("14-19", "20-24", "25-29", "30-39", "40-49", "50-59"), 2)
+hpv.test <- c(rep("positive", 6), rep("negative", 6))
+number.of.women <- c(160, 85, 48, 90, 82, 50, 
+                     492, 104, 126, 238, 242, 204)
+
+hpv.data <- data.frame(age.group, hpv.test, number.of.women)
+
+library(dplyr)
+library(ggplot2)
+hpv.data <- hpv.data %>% group_by(hpv.test) %>% 
+  mutate(sum.women = sum(number.of.women),
+         prop.women.age = number.of.women/sum.women)
+
+ggplot(hpv.data, aes(x = age.group, y = prop.women.age)) + 
+  geom_bar(aes(fill = hpv.test), stat = "identity", position = "dodge") +
+  theme_minimal(base_size = 15) +
+  labs(y = "Proportion", x = "Age", main = "Conditional distribution of age by HPV status")
+```
+
+### Example: HPV Status and age group
+
+- Conduct all stages of the chi-square hypothesis test for independence (state
+the null and alternative hypotheses, calculate the test statistic, calculate
+the degrees of freedom and the p-value, interpret the p-value and assess whether
+there is evidence against the null in favor of the alternative.)
+
+### Example: HPV Status and age group
+```{r}
+pchisq(40.55353, df=5, lower.tail=F)
+```
+
+### Example: HPV Status and age group
+```{r}
+library(tibble)
+n_way <- tribble(~ HPV, ~ noHPV,
+                   160,492,
+                   85,104,
+                   48,126,
+                   90,238,
+                   82,242,
+                   50,204) 
+chisq.test(n_way, correct=F)
+```
+
