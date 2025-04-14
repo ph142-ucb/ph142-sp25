@@ -193,9 +193,12 @@ There is a long literature studying changes in sex-ratios of births due to stres
 
 In this lab, we will compare the four methods we learned to calculate CIs for proportions. Recall that two of these methods involved hand calculations (though we can treat R as if it were a calculator) and two of the methods used built-in R functions.
 
+**Note: Test p_ - 1 passed is the expected output for p10-p14. Failed tests will continue to appear as Test p_ - 1 failed:**
+
 **10. Use the Normal approximation to construct a 95% confidence interval in this high stress group. We also called this specific method of constructing the CI the "large sample method". Assign the object `large_sample_ci` to a vector of the lower bound and upper bound rounded to 4 decimal places.**
 
 ```{r large-sample-method, tags=c()}
+# store any necessary variables beforehand 
 large_sample_ci <- NULL # YOUR CODE HERE
 large_sample_ci
 
@@ -211,6 +214,7 @@ large_sample_ci
 **11. Create the 95% CI again, this time using the R function that implements the Wilson Score method with a continuity correction. Round your answer to 4 decimal places.**
 
 ```{r Wilson-score-method, tags=c()}
+# store any necessary variables beforehand 
 wilson_score_ci <- NULL # YOUR CODE HERE
 wilson_score_ci
 
@@ -225,6 +229,7 @@ wilson_score_ci
 **12. Create the 95% CI again, this time using the Plus 4 method. Round your answer to 4 decimal places.**
 
 ```{r plus-4-method, tags=c()}
+# store any necessary variables beforehand 
 plus_4_ci <- NULL # YOUR CODE HERE
 plus_4_ci
 
@@ -239,6 +244,7 @@ plus_4_ci
 **13. Create the 95% CI again, this time using the R function that implements the Clopper Pearson (Exact) method. Round your answer to 4 decimal places.**
 
 ```{r Clopper-Pearson-method, tags=c()}
+# store any necessary variables beforehand 
 exact_method_ci <- NULL # YOUR CODE HERE
 exact_method_ci
 
@@ -274,7 +280,7 @@ ggplot(data = sex_CIs, aes(x = method, y = estimate)) +
   geom_segment(aes(x = method, xend = method, y = lower_CI, yend = upper_CI)) +
   labs(y = "Estimate with 95% CI")
 
-# Assign p14 to the plot of the CIs
+# Assign p14 to a plotof the CIs. First, store them as a tibble
 p14 <- NULL # YOUR CODE HERE
 p14
 
