@@ -12,7 +12,7 @@ library(testthat)
 ```
 
 ### Instructions 
-* Due date: Tuesday, April 19th at 10:00pm PST with a 2 hour grace period.
+* Due date: Saturday, April 19th at 10:00pm PST with a 2 hour grace period.
 * Late penalty: 50% late penalty if submitted within 24 hours of due date, no 
 marks for assignments submitted thereafter.
 * This assignment is graded on **correct completion**, all or nothing. You must pass all public tests and submit the assignment for credit.
